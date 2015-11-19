@@ -9,7 +9,7 @@
 #include <cstdlib>
 #include <algorithm>
 
-#define EPOCHS 300
+#define EPOCHS 300000
 
 std::vector<std::string> &split(const std::string &s, char delim, std::vector<std::string> &elems) {
 	std::stringstream ss(s);
@@ -73,9 +73,8 @@ int main(int argc, char** argv) {
 		count++;
 	}
 	
-	AdaptivePCA pca(4, 4);
+	AdaptivePCA pca(4, 2);
 	pca.train(inputList, EPOCHS, 0.0001);
 
-	std::cout << "processing finished in " << count << " cycles" << std::endl;
 	return 0;
 }
