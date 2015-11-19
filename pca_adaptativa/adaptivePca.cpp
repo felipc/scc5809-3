@@ -136,6 +136,13 @@ int AdaptivePCA::train(std::vector< double* > inputData, int epochs, double maxS
 		double learningRate = 0.5 / currentEpoch;
 		double sideLearningRate = 0.5 / currentEpoch;
 		double momentum = 0.0;
+		
+		if (learningRate < 0.0001) {
+			learningRate = 0.0001;
+		}
+		if (sideLearningRate < 0.0001) {
+			sideLearningRate = 0.0002;
+		}
 
 //		std::cout << std::endl << "===========================================================" << std::endl;
 //		std::cout << "Starting epoch " << currentEpoch << ". LearningRate: " << learningRate << ", SideLearningRate: " << sideLearningRate << std::endl;

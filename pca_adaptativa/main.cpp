@@ -10,6 +10,7 @@
 #include <algorithm>
 
 #define EPOCHS 300000
+#define OUTPUTS 3
 
 std::vector<std::string> &split(const std::string &s, char delim, std::vector<std::string> &elems) {
 	std::stringstream ss(s);
@@ -67,10 +68,10 @@ int main(int argc, char** argv) {
 		count++;
 	}
 	
-	AdaptivePCA pca(4, 2);
+	AdaptivePCA pca(4, OUTPUTS);
 	pca.train(inputList, EPOCHS, 0.0001);
 
-	double output[2];
+	double output[OUTPUTS];
 
 	for (int i=0;i<originalInputList.size();i++) {
 //		std::cout << "sample " << i << ": ";
@@ -78,7 +79,11 @@ int main(int argc, char** argv) {
 //			std::cout << originalInputList[i][j] << ", ";
 //		}
 		pca.evaluate(originalInputList[i], output);
-		std::cout << output[0] << "," << output[1] << "," << results[i] << std::endl;
+		for (int j=0;j<OUTPUTS;j++) {
+			std::cout << output[j] << ",";
+		}
+		
+		std::cout << results[i] << std::endl;
 
 //		std::cout << std::endl;
 	}
