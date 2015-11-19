@@ -73,7 +73,7 @@ float KohonenNetwork::train(const float* inputs) {
 	}
 
 	m_currentIteration++;
-	if (m_currentIteration % 150 == 0) {
+	if (m_currentIteration % 178 == 0) {
 		m_currentEpoch++;
 	}
 	return maxDelta;
