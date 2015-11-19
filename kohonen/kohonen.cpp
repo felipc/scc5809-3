@@ -63,7 +63,7 @@ float KohonenNetwork::train(const float* inputs) {
 			continue;
 		}
 
-		for (int i=0;i<4;i++) {
+		for (int i=0;i<m_inputs;i++) {
 			float delta = theta * learningRate  * (inputs[i] - m_weights[j+i]);
 			m_weights[j+i] += delta;
 			if (delta > maxDelta) {
