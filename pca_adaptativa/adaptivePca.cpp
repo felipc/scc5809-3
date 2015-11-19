@@ -1,6 +1,8 @@
 #include "adaptivePca.h"
 #include <stdlib.h>
 #include <cmath>
+#include <algorithm>
+#include <iostream>
 
 AdaptivePCA::AdaptivePCA(int inputSize, int outputSize) {
 	m_weights = new float[inputSize * outputSize]();
@@ -32,11 +34,28 @@ void AdaptivePCA::calcYVector(float* inputData, float* y) {
 	}
 }
 
-//return max side weight
+void AdaptivePCA::normalizeWeights() {
+	//TODO
+}
+
+void AdaptivePCA::normalizeInputs() {
+	//TODO
+}
+
+/** 
+* @brief train a single sample and adjust internal weights
+* 
+* @param inputData
+* @param learningRate
+* @param sideLearningRate
+* @param momentum
+* 
+* @return value of the highest side weight
+*/
 float AdaptivePCA::trainSample(float* inputData, float learningRate, float sideLearningRate, float momentum) {
+	float highestSideWeight = 0.0f;
 	//calculate vector y
 	float y[m_outputSize];
-
 	calcYVector(inputData,y);
 
 	//adjust weights
@@ -48,32 +67,48 @@ float AdaptivePCA::trainSample(float* inputData, float learningRate, float sideL
 		}
 	}
 
+	normalizeWeights();	
+	
 	//adjust side weights
 	for (int j=0;j<m_outputSize;j++) {
 		for (int l=0;l<j;l++) {
 			//TODO introduce momentum terms
 			float deltaU = -sideLearningRate * y[l] * y[j];
 			m_sideWeights[l * m_outputSize + j] += deltaU;
+			if (m_sideWeights[l * m_outputSize + j] > highestSideWeight) {
+				highestSideWeight = m_sideWeights[l * m_outputSize + j];
+			}
 		}
 	}
+
+	return highestSideWeight;
 }
 
 int AdaptivePCA::train(std::vector< float* > inputData, int epochs, float maxSideWeight) {
 	int currentEpoch = 0;
-	float sideWeight = 0.0f;
+	float highestSideWeight = 99999.9;
 
-	//TODO normalize data
+	normalizeInputs();
 	
 	//init weights
 	for (int i=0;i<m_inputSize * m_outputSize;i++) {
 		m_weights[i] = (float)rand() / RAND_MAX;
 	}
 
-	while (currentEpoch < epochs && sideWeight > maxSideWeight) {
+	while (currentEpoch < epochs && highestSideWeight > maxSideWeight) {
 		//randomize samples
 		std::random_shuffle(inputData.begin(), inputData.end());
 		
+		for (int i=0;i<inputData.size();i++) {
+			std::cout << "Starting epoch " << i << std::endl;
+			//TODO calculate learning rates and momentum
+			float learningRate = 0.001;
+			float sideLearningRate = 0.001;
+			float momentum = 0.0;
 
+			highestSideWeight = trainSample(inputData[i], learningRate, sideLearningRate, momentum);
+			std::cout << "\tHighest side weight: " << highestSideWeight << std::endl;
+		}
 	}
 }
 
