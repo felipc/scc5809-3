@@ -13,6 +13,8 @@ class AdaptivePCA {
 	float calcVariance(std::vector< float* > inputData, int index);
 	void calcYVector(float* inputData, float* y);
 	float trainSample(float* inputData, float learningRate, float sideLearningRate, float momentum);
+	void normalizeWeights();
+	void normalizeInputs();
 
 	int m_inputSize;
 	int m_outputSize;
