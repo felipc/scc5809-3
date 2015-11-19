@@ -18,6 +18,17 @@ AdaptivePCA::~AdaptivePCA() {
 	delete[] m_sideWeights;
 }
 
+void AdaptivePCA::evaluate(double* sample, double* output) {
+	for (int j=0;j<m_outputSize;j++) {
+		output[j] = 0.0;
+
+		//weights
+		for (int i=0;i<m_inputSize;i++) {
+			output[j] += m_weights[i * m_outputSize + j] * sample[i];
+		}
+	}
+}
+
 void AdaptivePCA::calcYVector(double* inputData, double* y) {
 	for (int j=0;j<m_outputSize;j++) {
 		y[j] = 0.0;

@@ -7,6 +7,7 @@ class AdaptivePCA {
 	AdaptivePCA(int inputSize, int outputSize);
 	~AdaptivePCA();
 	int train(std::vector< double* > inputData, int epochs, double maxSideWeight);
+	void evaluate(double* sample, double* output);
 
 	private:
 	void print();

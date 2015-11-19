@@ -31,11 +31,13 @@ int main(int argc, char** argv) {
 	std::string line;
 	int count = 0;
 	std::vector<double*> inputList;
+	std::vector<double*> originalInputList;
 	std::vector<int> results;
-	double normalizingFactors[4] = {0.0}; //keeps the max value of each attribute
 
 	while (file.good()) {
 		double *inputs = new double[4]();
+		double *originalInputs = new double[4]();
+
 		int result;
 
 		getline(file, line);
@@ -48,9 +50,7 @@ int main(int argc, char** argv) {
 //		std::cout << "Line " << count << std::endl;
 		for (int i=0;i<4;i++) {
 			inputs[i] = atof(tokens[i].c_str());
-			if (inputs[i] > normalizingFactors[i]) {
-				normalizingFactors[i] = inputs[i];
-			}
+			originalInputs[i] = inputs[i];
 		}
 
 		if (tokens[4].compare("Iris-setosa") == 0) {
@@ -63,18 +63,25 @@ int main(int argc, char** argv) {
 			results.push_back(2);
 		}
 		inputList.push_back(inputs);
-
-//		std::cout << "0: " << inputs[0] << ", ";
-//		std::cout << "1: " << inputs[1] << ", ";
-//		std::cout << "2: " << inputs[2] << ", ";
-//		std::cout << "3: " << inputs[3] << ", ";
-//		std::cout << "R: " << results.back() << std::endl << std::endl;
-
+		originalInputList.push_back(originalInputs);
 		count++;
 	}
 	
-	AdaptivePCA pca(4, 3);
+	AdaptivePCA pca(4, 2);
 	pca.train(inputList, EPOCHS, 0.0001);
+
+	double output[2];
+
+	for (int i=0;i<originalInputList.size();i++) {
+//		std::cout << "sample " << i << ": ";
+//		for (int j=0;j<4;j++) {
+//			std::cout << originalInputList[i][j] << ", ";
+//		}
+		pca.evaluate(originalInputList[i], output);
+		std::cout << output[0] << "," << output[1] << "," << results[i] << std::endl;
+
+//		std::cout << std::endl;
+	}
 
 	return 0;
 }
