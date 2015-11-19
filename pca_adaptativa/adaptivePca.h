@@ -6,21 +6,21 @@ class AdaptivePCA {
 	public:
 	AdaptivePCA(int inputSize, int outputSize);
 	~AdaptivePCA();
-	int train(std::vector< float* > inputData, int epochs, float maxSideWeight);
+	int train(std::vector< double* > inputData, int epochs, double maxSideWeight);
 
 	private:
 	void print();
-	float calcMean(std::vector< float* > inputData, int index);
-	float calcVariance(std::vector< float* > inputData, int index);
-	void calcYVector(float* inputData, float* y);
-	float trainSample(float* inputData, float learningRate, float sideLearningRate, float momentum);
+	double calcMean(std::vector< double* > inputData, int index);
+	double calcVariance(std::vector< double* > inputData, int index);
+	void calcYVector(double* inputData, double* y);
+	double trainSample(double* inputData, double learningRate, double sideLearningRate, double momentum);
 	void normalizeWeights();
-	void normalizeInputs(std::vector< float* > &inputData);
+	void normalizeInputs(std::vector< double* > &inputData);
 
 	int m_inputSize;
 	int m_outputSize;
-	float *m_weights; //w matrix
-	float *m_sideWeights; // u matrix
+	double *m_weights; //w matrix
+	double *m_sideWeights; // u matrix
 };
 
 #endif

@@ -30,12 +30,12 @@ int main(int argc, char** argv) {
 	std::ifstream file("iris.data");
 	std::string line;
 	int count = 0;
-	std::vector<float*> inputList;
+	std::vector<double*> inputList;
 	std::vector<int> results;
-	float normalizingFactors[4] = {0.0}; //keeps the max value of each attribute
+	double normalizingFactors[4] = {0.0}; //keeps the max value of each attribute
 
 	while (file.good()) {
-		float *inputs = new float[4]();
+		double *inputs = new double[4]();
 		int result;
 
 		getline(file, line);
@@ -73,7 +73,7 @@ int main(int argc, char** argv) {
 		count++;
 	}
 	
-	AdaptivePCA pca(4, 2);
+	AdaptivePCA pca(4, 3);
 	pca.train(inputList, EPOCHS, 0.0001);
 
 	return 0;

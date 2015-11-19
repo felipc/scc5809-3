@@ -6,8 +6,8 @@
 #include <iomanip>
 
 AdaptivePCA::AdaptivePCA(int inputSize, int outputSize) {
-	m_weights = new float[inputSize * outputSize]();
-	m_sideWeights = new float[outputSize * outputSize]();
+	m_weights = new double[inputSize * outputSize]();
+	m_sideWeights = new double[outputSize * outputSize]();
 
 	m_inputSize = inputSize;
 	m_outputSize = outputSize;
@@ -18,7 +18,7 @@ AdaptivePCA::~AdaptivePCA() {
 	delete[] m_sideWeights;
 }
 
-void AdaptivePCA::calcYVector(float* inputData, float* y) {
+void AdaptivePCA::calcYVector(double* inputData, double* y) {
 	for (int j=0;j<m_outputSize;j++) {
 		y[j] = 0.0;
 
@@ -37,7 +37,7 @@ void AdaptivePCA::calcYVector(float* inputData, float* y) {
 
 void AdaptivePCA::normalizeWeights() {
 	for (int j=0;j<m_outputSize;j++) {
-		float mag = 0.0f;
+		double mag = 0.0f;
 
 		for (int i=0;i<m_inputSize;i++) {
 			mag += m_weights[i * m_outputSize + j] * m_weights[i * m_outputSize + j];
@@ -51,10 +51,10 @@ void AdaptivePCA::normalizeWeights() {
 	}
 }
 
-void AdaptivePCA::normalizeInputs(std::vector< float* > &inputData) {
+void AdaptivePCA::normalizeInputs(std::vector< double* > &inputData) {
 	for(int i=0;i<m_inputSize;i++) {
-		float mean = calcMean(inputData, i);
-		float variance = calcVariance(inputData, i);
+		double mean = calcMean(inputData, i);
+		double variance = calcVariance(inputData, i);
 
 		for (int j=0;j<inputData.size();j++) {
 			inputData[j][i] = (inputData[j][i] - mean) / variance;
@@ -72,17 +72,17 @@ void AdaptivePCA::normalizeInputs(std::vector< float* > &inputData) {
 * 
 * @return value of the highest side weight
 */
-float AdaptivePCA::trainSample(float* inputData, float learningRate, float sideLearningRate, float momentum) {
-	float highestSideWeight = 0.0f;
+double AdaptivePCA::trainSample(double* inputData, double learningRate, double sideLearningRate, double momentum) {
+	double highestSideWeight = 0.0f;
 	//calculate vector y
-	float y[m_outputSize];
+	double y[m_outputSize];
 	calcYVector(inputData,y);
 
 	//adjust weights
 	for (int i=0;i<m_inputSize;i++) {
 		for (int j=0;j<m_outputSize;j++) {
 			//TODO introduce momentum terms
-			float deltaW = learningRate * inputData[i] * y[j];
+			double deltaW = learningRate * inputData[i] * y[j];
 			m_weights[i * m_outputSize + j] += deltaW;
 		}
 	}
@@ -93,7 +93,7 @@ float AdaptivePCA::trainSample(float* inputData, float learningRate, float sideL
 	for (int j=0;j<m_outputSize;j++) {
 		for (int l=0;l<j;l++) {
 			//TODO introduce momentum terms
-			float deltaU = -sideLearningRate * y[l] * y[j];
+			double deltaU = -sideLearningRate * y[l] * y[j];
 			m_sideWeights[l * m_outputSize + j] += deltaU;
 			if (fabs(m_sideWeights[l * m_outputSize + j]) > highestSideWeight) {
 				highestSideWeight = fabs(m_sideWeights[l * m_outputSize + j]);
@@ -104,27 +104,27 @@ float AdaptivePCA::trainSample(float* inputData, float learningRate, float sideL
 	return highestSideWeight;
 }
 
-int AdaptivePCA::train(std::vector< float* > inputData, int epochs, float maxSideWeight) {
+int AdaptivePCA::train(std::vector< double* > inputData, int epochs, double maxSideWeight) {
 	int currentEpoch = 0;
-	float highestSideWeight = 99999.9;
-	float highestSideWeightFromEpoch = 99999.9;
+	double highestSideWeight = 99999.9;
+	double highestSideWeightFromEpoch = 99999.9;
 	normalizeInputs(inputData);
 	
 	//init weights
 	for (int i=0;i<m_inputSize * m_outputSize;i++) {
-		m_weights[i] = (float)rand() / RAND_MAX;
+		m_weights[i] = (double)rand() / RAND_MAX;
 	}
 
 	for (int i=0;i<m_outputSize * m_outputSize;i++) {
-		m_sideWeights[i] = (float)rand() / RAND_MAX;
+		m_sideWeights[i] = (double)rand() / RAND_MAX;
 	}
 
 	while (currentEpoch <= epochs && highestSideWeightFromEpoch > maxSideWeight) {
 		currentEpoch++;
 		highestSideWeightFromEpoch = 0.0;
-		float learningRate = 0.5 / currentEpoch;
-		float sideLearningRate = 0.5 / currentEpoch;
-		float momentum = 0.0;
+		double learningRate = 0.5 / currentEpoch;
+		double sideLearningRate = 0.5 / currentEpoch;
+		double momentum = 0.0;
 
 //		std::cout << std::endl << "===========================================================" << std::endl;
 //		std::cout << "Starting epoch " << currentEpoch << ". LearningRate: " << learningRate << ", SideLearningRate: " << sideLearningRate << std::endl;
@@ -149,8 +149,8 @@ int AdaptivePCA::train(std::vector< float* > inputData, int epochs, float maxSid
 	print();
 }
 
-float AdaptivePCA::calcMean(std::vector< float* > inputData, int index) {
-	float sum = 0.0f;
+double AdaptivePCA::calcMean(std::vector< double* > inputData, int index) {
+	double sum = 0.0f;
 
 	for (int i=0;i<inputData.size();i++) {
 		sum += inputData[i][index];
@@ -159,9 +159,9 @@ float AdaptivePCA::calcMean(std::vector< float* > inputData, int index) {
 	return sum / inputData.size();
 }
 
-float AdaptivePCA::calcVariance(std::vector< float* > inputData, int index) {
-	float mean = calcMean(inputData, index);
-	float sum = 0.0f;
+double AdaptivePCA::calcVariance(std::vector< double* > inputData, int index) {
+	double mean = calcMean(inputData, index);
+	double sum = 0.0f;
 
 	for (int i=0;i<inputData.size();i++) {
 		sum += pow(inputData[i][index] - mean, 2);
